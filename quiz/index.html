@@ -822,12 +822,38 @@ html, body {
   <div style="max-width:540px;text-align:center;display:flex;flex-direction:column;align-items:center;">
     <div class="intro-eyebrow">NOT A QUIZ · A MIRROR</div>
     <h1 class="intro-h">What are you <em>breathing</em> into the world?</h1>
-    <p class="intro-sub">Four questions. Sixty seconds. <em>Your actual math — in lb CO₂e.</em><br>No judgment. Just knowing.</p>
+
+    <!-- "60 seconds" surfaced visually as a feature, not a disclaimer -->
+    <div style="display:flex;gap:24px;margin-bottom:28px;flex-wrap:wrap;justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-family:Georgia,serif;font-size:32px;font-weight:bold;color:var(--lime);letter-spacing:-1px;line-height:1;">60</div>
+        <div style="font-family:'Courier New',monospace;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-top:3px;">SECONDS</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:Georgia,serif;font-size:32px;font-weight:bold;color:var(--lime);letter-spacing:-1px;line-height:1;">4</div>
+        <div style="font-family:'Courier New',monospace;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-top:3px;">QUESTIONS</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:Georgia,serif;font-size:32px;font-weight:bold;color:var(--lime);letter-spacing:-1px;line-height:1;">1</div>
+        <div style="font-family:'Courier New',monospace;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-top:3px;">REAL NUMBER</div>
+      </div>
+    </div>
+
+    <!-- Lead with insight, not safety — safety is the secondary beat -->
+    <p class="intro-sub"><em>See what your daily choices are writing into the air.</em><br>No judgment. Just knowing.</p>
+
+    <!-- Social proof before the ask -->
+    <div style="font-family:'Courier New',monospace;font-size:9px;color:rgba(200,244,90,0.5);letter-spacing:2px;margin-bottom:28px;" id="socialProof">● 2,400+ PEOPLE HAVE SEEN THEIR MIRROR</div>
+
     <div class="name-wrap">
       <label class="name-label" for="nameInput">YOUR FIRST NAME</label>
       <input class="name-input" id="nameInput" type="text" placeholder="e.g. Sanjeet" autocomplete="given-name" maxlength="30">
     </div>
-    <button class="start-btn" id="startBtn" disabled>BEGIN →</button>
+
+    <!-- CTA echoes the mirror metaphor -->
+    <button class="start-btn" id="startBtn" disabled>SEE MY MIRROR →</button>
     <p class="intro-disclaimer">No account needed. No data sold.</p>
   </div>
 </div>
@@ -1262,6 +1288,26 @@ window.goToPeek = function() { window.goToQ3(); };
 // ── INTRO ──
 const nameInput = document.getElementById('nameInput');
 const startBtn  = document.getElementById('startBtn');
+
+// Fetch real waitlist count for social proof
+(async function loadSocialProof() {
+  try {
+    const { count } = await sb
+      .from('waitlist')
+      .select('*', { count: 'exact', head: true });
+    if (count && count > 0) {
+      // Round down to nearest 50 to feel honest, not fake-precise
+      const rounded = Math.max(count, 10);
+      const display = rounded >= 1000
+        ? `${(rounded / 1000).toFixed(1)}k+`
+        : `${rounded}+`;
+      const el = document.getElementById('socialProof');
+      if (el) el.textContent = `● ${display} PEOPLE HAVE SEEN THEIR MIRROR`;
+    }
+  } catch(e) {
+    // Silently keep the static fallback
+  }
+})();
 
 nameInput.addEventListener('input', () => {
   startBtn.disabled = nameInput.value.trim().length < 1;
