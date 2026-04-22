@@ -1,1 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eco Pulse · What are you breathing into the world?</title>
+<meta name="description" content="A 60-second mirror. See what your daily choices are writing into the air — and what one shift could change.">
+<meta property="og:title" content="Eco Pulse · 60-second footprint mirror">
+<meta property="og:description" content="Not a quiz. A mirror. See your daily choices in lb CO₂e — and one shift that changes the year.">
+<meta property="og:image" content="https://tryecopulse.com/home.png">
+<meta property="og:url" content="https://tryecopulse.com/quiz">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* ── RESET & ROOT ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --lime:   #C8F45A;
+  --teal:   #2DD4BF;
+  --amber:  #FCD34D;
+  --rose:   #FB7185;
+  --bg:     #081A0A;
+  --bg2:    #0D2412;
+  --bg3:    #061408;
+  --glass:  rgba(255,255,255,0.04);
+  --border: rgba(200,244,90,0.12);
+}
+
+html, body {
+  background: var(--bg);
+  color: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: var(--lime);
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  z-index: 100;
+  box-shadow: 0 0 12px rgba(200,244,90,0.5);
+}
+
+/* ── NAV ── */
+.quiz-nav {
+  padding: 20px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.quiz-nav-logo {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: var(--lime);
+  font-weight: bold;
+}
+.quiz-nav-step {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 2px;
+}
+
+/* ── SCREENS (all screens share this wrapper) ── */
+.screen {
+  display: none;
+  min-height: calc(100vh - 61px);
+  padding: 0 24px 48px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeUp 0.4s ease both;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── INTRO SCREEN ── */
+.intro-eyebrow {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(200,244,90,0.55);
+  letter-spacing: 5px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.intro-eyebrow::before, .intro-eyebrow::after {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: rgba(200,244,90,0.3);
+}
+.intro-h {
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: bold;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  text-align: center;
+  margin-bottom: 20px;
+  max-width: 600px;
+}
+.intro-h em { color: var(--lime); font-style: italic; }
+.intro-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.8;
+  text-align: center;
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+.intro-sub em { color: rgba(255,255,255,0.9); font-style: italic; }
+
+/* Name input */
+.name-wrap {
+  width: 100%;
+  max-width: 380px;
+  margin-bottom: 20px;
+}
+.name-label {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(200,244,90,0.55);
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+  display: block;
+}
+.name-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  outline: none;
+  font-family: Georgia, serif;
+  font-size: 22px;
+  color: #fff;
+  padding: 8px 0;
+  transition: border-color 0.2s;
+}
+.name-input:focus { border-bottom-color: var(--lime); }
+.name-input::placeholder { color: rgba(255,255,255,0.2); }
+
+/* Start CTA */
+.start-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: var(--bg);
+  background: var(--lime);
+  border: none;
+  padding: 16px 40px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  margin-top: 8px;
+}
+.start-btn:hover { background: #d6f970; transform: translateY(-1px); }
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.intro-disclaimer {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.25);
+  margin-top: 20px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* ── QUESTION SCREENS ── */
+.q-wrap {
+  width: 100%;
+  max-width: 680px;
+  padding-top: 40px;
+}
+.q-stage {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(200,244,90,0.5);
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.q-stage::before { content: ''; width: 20px; height: 1px; background: rgba(200,244,90,0.3); }
+.q-headline {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: bold;
+  line-height: 1.2;
+  letter-spacing: -0.8px;
+  margin-bottom: 10px;
+  max-width: 560px;
+}
+.q-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 480px;
+  font-style: italic;
+}
+
+/* Answer cards grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px 18px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  min-height: 130px;
+}
+.card:hover {
+  border-color: rgba(200,244,90,0.35);
+  background: rgba(200,244,90,0.05);
+  transform: translateY(-2px);
+}
+.card.selected {
+  border-color: var(--lime);
+  background: rgba(200,244,90,0.08);
+}
+.card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 11px;
+  color: var(--lime);
+  font-family: 'Courier New', monospace;
+}
+.card-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+.card-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: rgba(255,255,255,0.92);
+  line-height: 1.3;
+}
+.card-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.5;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.3px;
+}
+
+/* Card reveal state (Q2 and Q3) */
+.card.revealed {
+  border-color: rgba(200,244,90,0.4);
+  background: rgba(200,244,90,0.07);
+  pointer-events: none;
+}
+.card-impact {
+  display: none;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--lime);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+.card.revealed .card-impact { display: block; }
+
+/* Q3 delta split */
+.card-shift {
+  display: none;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Courier New', monospace;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 8px;
+  margin-top: 4px;
+  line-height: 1.6;
+}
+.card-shift em { color: var(--teal); font-style: normal; }
+.card.revealed .card-shift { display: block; }
+
+/* Q4 — future commitment cards */
+.card.commitment .card-title { color: var(--lime); }
+
+/* Next button */
+.next-btn {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--bg);
+  background: var(--lime);
+  border: none;
+  padding: 14px 32px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+.next-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+.next-btn:hover { background: #d6f970; transform: translateY(-1px); }
+
+/* App peek bridge (between Q2 and Q3) */
+.app-peek {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 61px);
+  padding: 40px 24px;
+  animation: fadeUp 0.4s ease both;
+}
+.app-peek.active { display: flex; }
+
+.peek-line {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: rgba(200,244,90,0.6);
+  letter-spacing: 4px;
+  margin-bottom: 24px;
+}
+.peek-h {
+  font-size: clamp(20px, 4vw, 28px);
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+  max-width: 480px;
+}
+.peek-h em { color: var(--lime); font-style: italic; }
+.peek-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  margin-bottom: 32px;
+  font-style: italic;
+}
+.peek-phone {
+  background: linear-gradient(165deg, #1a2e1d, #0a1a0c);
+  border: 1px solid rgba(200,244,90,0.15);
+  border-radius: 28px;
+  padding: 8px;
+  max-width: 220px;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.5), 0 2px 8px rgba(200,244,90,0.06);
+  margin-bottom: 28px;
+}
+.peek-phone img {
+  width: 100%;
+  border-radius: 22px;
+  display: block;
+}
+.peek-continue {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.4);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 12px 28px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.peek-continue:hover { border-color: var(--lime); color: var(--lime); }
+
+/* ── REVEAL SCREEN ── */
+.reveal-wrap {
+  width: 100%;
+  max-width: 680px;
+  padding-top: 40px;
+}
+.reveal-eyebrow {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: var(--lime);
+  letter-spacing: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.reveal-eyebrow::before { content: ''; width: 20px; height: 1px; background: rgba(200,244,90,0.4); }
+
+.reveal-h {
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: bold;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.reveal-h em { color: var(--lime); font-style: italic; }
+
+.reveal-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  font-style: italic;
+}
+
+/* 3 stat cards — Weekly Wrapped style */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+}
+.stat-card-lbl {
+  font-family: 'Courier New', monospace;
+  font-size: 7px;
+  color: rgba(200,244,90,0.5);
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+.stat-card-val {
+  font-family: Georgia, serif;
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: bold;
+  color: var(--lime);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-card-unit {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1.5px;
+}
+
+/* Big annual number */
+.annual-block {
+  background: rgba(45,212,191,0.05);
+  border: 1px solid rgba(45,212,191,0.15);
+  border-radius: 10px;
+  padding: 28px 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.annual-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(45,212,191,0.08) 0%, transparent 65%);
+}
+.annual-pre {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  color: rgba(45,212,191,0.6);
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+.annual-num {
+  font-family: Georgia, serif;
+  font-size: clamp(44px, 10vw, 72px);
+  font-weight: bold;
+  color: var(--teal);
+  letter-spacing: -3px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.annual-unit {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(45,212,191,0.7);
+  letter-spacing: 3px;
+  line-height: 1.6;
+}
+.annual-compare {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 12px;
+  font-style: italic;
+}
+.annual-compare strong { color: rgba(255,255,255,0.82); font-weight: normal; }
+
+/* Manifesto lines */
+.reveal-manifesto {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 24px;
+  margin-bottom: 28px;
+}
+.reveal-man-line {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+.reveal-man-dash {
+  font-family: 'Courier New', monospace;
+  color: rgba(200,244,90,0.35);
+  font-size: 11px;
+  flex-shrink: 0;
+  padding-top: 3px;
+}
+.reveal-man-txt {
+  font-size: 15px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.65;
+}
+.reveal-man-txt em { color: var(--lime); font-style: italic; }
+
+/* App screenshots mini */
+.reveal-screens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.reveal-screen-phone {
+  background: linear-gradient(165deg, #1a2e1d, #0a1a0c);
+  border: 1px solid rgba(200,244,90,0.1);
+  border-radius: 14px;
+  padding: 5px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.reveal-screen-phone img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+.reveal-screens-cap {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* CTAs */
+.reveal-cta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.cta-primary {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: var(--bg);
+  background: var(--lime);
+  border: none;
+  padding: 16px 40px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+  max-width: 380px;
+}
+.cta-primary:hover { background: #d6f970; transform: translateY(-1px); }
+.cta-share {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.55);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.14);
+  padding: 13px 32px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+  max-width: 380px;
+}
+.cta-share:hover { border-color: var(--teal); color: var(--teal); }
+
+/* Waitlist inline form */
+.reveal-wl {
+  display: none;
+  background: rgba(200,244,90,0.04);
+  border: 1px solid rgba(200,244,90,0.18);
+  border-radius: 8px;
+  padding: 24px 20px;
+  margin-top: 16px;
+  width: 100%;
+  max-width: 380px;
+}
+.reveal-wl.open { display: block; animation: fadeUp 0.3s ease both; }
+.reveal-wl-pre {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  color: var(--lime);
+  letter-spacing: 3px;
+  margin-bottom: 14px;
+}
+.wl-inp-wrap { margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px; }
+.wl-inp-lbl { font-family: 'Courier New', monospace; font-size: 8px; color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-bottom: 5px; display: block; }
+.wl-inp {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  color: rgba(255,255,255,0.92);
+  padding: 3px 0;
+}
+.wl-inp::placeholder { color: rgba(255,255,255,0.2); }
+.wl-submit {
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: bold;
+  color: var(--bg);
+  background: var(--lime);
+  border: none;
+  padding: 13px;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.18s;
+}
+.wl-submit:hover { background: #d6f970; }
+.wl-err { font-family: 'Courier New', monospace; font-size: 10px; color: var(--rose); margin-top: 8px; min-height: 14px; }
+.wl-done {
+  display: none;
+  text-align: center;
+  padding: 8px 0;
+}
+.wl-done.show { display: block; }
+.wl-done-h { font-family: Georgia, serif; font-size: 18px; color: rgba(255,255,255,0.92); margin-bottom: 6px; }
+.wl-done-p { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+/* Share toast */
+.share-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg2);
+  border: 1px solid rgba(200,244,90,0.25);
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: var(--lime);
+  letter-spacing: 2px;
+  transition: transform 0.3s ease;
+  z-index: 200;
+  white-space: nowrap;
+}
+.share-toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── SUCCESS SCREEN ── */
+.success-screen {
+  text-align: center;
+}
+.success-plant { font-size: 56px; margin-bottom: 24px; line-height: 1; }
+.success-h { font-size: clamp(22px, 4vw, 32px); font-weight: bold; letter-spacing: -0.8px; margin-bottom: 12px; }
+.success-h em { color: var(--lime); font-style: italic; }
+.success-p { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.75; max-width: 400px; margin-bottom: 32px; }
+.success-screens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 360px;
+  margin: 0 auto 28px;
+}
+.success-phone {
+  background: linear-gradient(165deg, #1a2e1d, #0a1a0c);
+  border: 1px solid rgba(200,244,90,0.12);
+  border-radius: 14px;
+  padding: 5px;
+}
+.success-phone img { width: 100%; border-radius: 10px; display: block; }
+.success-note {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 2px;
+}
+
+/* ── FOOTER ── */
+.quiz-footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.quiz-footer a {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.25);
+  text-decoration: none;
+  letter-spacing: 2px;
+}
+.quiz-footer a:hover { color: var(--lime); }
+
+/* ── MOBILE ── */
+@media (max-width: 520px) {
+  .cards-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .card { min-height: 110px; padding: 14px 12px; }
+  .card-emoji { font-size: 22px; }
+  .card-title { font-size: 13px; }
+  .stat-cards { gap: 6px; }
+  .stat-card { padding: 12px 8px; }
+  .reveal-screens { gap: 6px; }
+  .annual-num { font-size: 52px; }
+}
+
+@media (max-width: 360px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+/* ── SPARKLE ANIMATION (Q4 selection) ── */
+@keyframes sparkle {
+  0%   { opacity: 0; transform: scale(0.5); }
+  50%  { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1); }
+}
+.sparkle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  animation: sparkle 0.8s ease forwards;
+}
+
+/* ── NUMBER COUNT-UP ── */
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.count-anim { animation: countUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+
+<!-- Nav -->
+<nav class="quiz-nav">
+  <div class="quiz-nav-logo">ECOPULSE</div>
+  <div class="quiz-nav-step" id="stepLabel">A 60-SECOND MIRROR</div>
+</nav>
+
+<!-- ══ SCREEN 0: INTRO ══ -->
+<div class="screen active" id="screen-intro">
+  <div style="max-width:540px;text-align:center;display:flex;flex-direction:column;align-items:center;">
+    <div class="intro-eyebrow">NOT A QUIZ · A MIRROR</div>
+    <h1 class="intro-h">What are you <em>breathing</em> into the world?</h1>
+    <p class="intro-sub">Four questions. Sixty seconds. <em>Your actual math — in lb CO₂e.</em><br>No judgment. Just knowing.</p>
+    <div class="name-wrap">
+      <label class="name-label" for="nameInput">YOUR FIRST NAME</label>
+      <input class="name-input" id="nameInput" type="text" placeholder="e.g. Sanjeet" autocomplete="given-name" maxlength="30">
+    </div>
+    <button class="start-btn" id="startBtn" disabled>BEGIN →</button>
+    <p class="intro-disclaimer">No account needed. No data sold.</p>
+  </div>
+</div>
+
+<!-- ══ SCREEN 1: Q1 — THE MIRROR ══ -->
+<div class="screen" id="screen-q1">
+  <div class="q-wrap">
+    <div class="q-stage">THE MIRROR · Q1 OF 4</div>
+    <h2 class="q-headline">When you think about your impact on the planet, what rises first?</h2>
+    <p class="q-sub">There's no right answer. Just the honest one.</p>
+    <div class="cards-grid">
+      <div class="card" data-track="indifferent" onclick="selectQ1(this)">
+        <div class="card-emoji">🫥</div>
+        <div class="card-title">Honestly, I don't think about it much.</div>
+        <div class="card-desc">It's not front of mind.</div>
+      </div>
+      <div class="card" data-track="guilty" onclick="selectQ1(this)">
+        <div class="card-emoji">😔</div>
+        <div class="card-title">A quiet shame I don't know what to do with.</div>
+        <div class="card-desc">I know. I just don't act.</div>
+      </div>
+      <div class="card" data-track="overwhelmed" onclick="selectQ1(this)">
+        <div class="card-emoji">😰</div>
+        <div class="card-title">Too much, too big — I don't know where to start.</div>
+        <div class="card-desc">Everything feels impossible.</div>
+      </div>
+      <div class="card" data-track="hopeful" onclick="selectQ1(this)">
+        <div class="card-emoji">🌱</div>
+        <div class="card-title">I'm trying. I want to do more.</div>
+        <div class="card-desc">Already on the path.</div>
+      </div>
+    </div>
+    <button class="next-btn" id="next-q1" onclick="goToQ2()">CONTINUE →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: Q2 — THE PAST ══ -->
+<div class="screen" id="screen-q2">
+  <div class="q-wrap">
+    <div class="q-stage">THE PAST · Q2 OF 4</div>
+    <h2 class="q-headline" id="q2-headline">Just one thing from the last month.</h2>
+    <p class="q-sub" id="q2-sub">Pick the one that feels most honest — not the worst, just the truest.</p>
+    <div class="cards-grid">
+      <div class="card" data-past="flight" onclick="selectQ2(this)">
+        <div class="card-emoji">✈️</div>
+        <div class="card-title">A short flight I took this year</div>
+        <div class="card-desc">round trip, ~600 miles</div>
+        <div class="card-impact">~550 lb CO₂e</div>
+      </div>
+      <div class="card" data-past="steak" onclick="selectQ2(this)">
+        <div class="card-emoji">🥩</div>
+        <div class="card-title">That steak dinner last week</div>
+        <div class="card-desc">8oz beef, one meal</div>
+        <div class="card-impact">~15 lb CO₂e</div>
+      </div>
+      <div class="card" data-past="amazon" onclick="selectQ2(this)">
+        <div class="card-emoji">📦</div>
+        <div class="card-title">The Amazon boxes this month</div>
+        <div class="card-desc">~5 parcels, typical haul</div>
+        <div class="card-impact">~8 lb CO₂e</div>
+      </div>
+      <div class="card" data-past="drive" onclick="selectQ2(this)">
+        <div class="card-emoji">🚗</div>
+        <div class="card-title">Solo drives I could've skipped</div>
+        <div class="card-desc">one week of commuting</div>
+        <div class="card-impact">~70 lb CO₂e</div>
+      </div>
+    </div>
+    <button class="next-btn" id="next-q2" onclick="goToPeek()">CONTINUE →</button>
+  </div>
+</div>
+
+<!-- ══ APP PEEK (bridge between Q2 and Q3) ══ -->
+<div class="app-peek" id="screen-peek">
+  <div class="peek-line">ECO PULSE · DAILY</div>
+  <h2 class="peek-h">This is what <em>Eco Pulse</em> does — every single day.</h2>
+  <p class="peek-sub">Your ledger, live. No guessing. No estimating.</p>
+  <div class="peek-phone">
+    <img src="../home.png" alt="Eco Pulse home screen">
+  </div>
+  <button class="peek-continue" onclick="goToQ3()">CONTINUE TO YOUR PRESENT →</button>
+</div>
+
+<!-- ══ SCREEN 3: Q3 — THE PRESENT ══ -->
+<div class="screen" id="screen-q3">
+  <div class="q-wrap">
+    <div class="q-stage">THE PRESENT · Q3 OF 4</div>
+    <h2 class="q-headline" id="q3-headline">What about today?</h2>
+    <p class="q-sub" id="q3-sub">Pick one ordinary thing. We'll show you the delta.</p>
+    <div class="cards-grid">
+      <div class="card" data-present="coffee" onclick="selectQ3(this)">
+        <div class="card-emoji">☕</div>
+        <div class="card-title">Morning coffee — to-go, dairy milk</div>
+        <div class="card-desc">the usual order</div>
+        <div class="card-impact">0.8 lb CO₂e</div>
+        <div class="card-shift">Swap to reusable + oat milk → <em>save 0.6 lb</em></div>
+      </div>
+      <div class="card" data-present="lunch" onclick="selectQ3(this)">
+        <div class="card-emoji">🍔</div>
+        <div class="card-title">A lunch I've already decided on</div>
+        <div class="card-desc">fast food or beef-based</div>
+        <div class="card-impact">9 lb CO₂e</div>
+        <div class="card-shift">Plant-based swap → <em>save 6 lb today</em></div>
+      </div>
+      <div class="card" data-present="commute" onclick="selectQ3(this)">
+        <div class="card-emoji">🚘</div>
+        <div class="card-title">How I'm getting home tonight</div>
+        <div class="card-desc">solo drive, ~10 miles</div>
+        <div class="card-impact">7 lb CO₂e</div>
+        <div class="card-shift">Transit or cycle → <em>save 4–7 lb</em></div>
+      </div>
+      <div class="card" data-present="screen" onclick="selectQ3(this)">
+        <div class="card-emoji">📱</div>
+        <div class="card-title">Hours on screens today</div>
+        <div class="card-desc">4hrs streaming HD</div>
+        <div class="card-impact">0.5 lb CO₂e</div>
+        <div class="card-shift">Switch to audio/reading → <em>save 0.4 lb</em></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.35);font-style:italic;margin-bottom:20px;font-family:'Courier New',monospace;">Not every choice feels big. That's the point.</p>
+    <button class="next-btn" id="next-q3" onclick="goToQ4()">CONTINUE →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: Q4 — THE FUTURE ══ -->
+<div class="screen" id="screen-q4">
+  <div class="q-wrap">
+    <div class="q-stage">THE FUTURE · Q4 OF 4</div>
+    <h2 class="q-headline" id="q4-headline">One shift. The one you'd actually keep.</h2>
+    <p class="q-sub" id="q4-sub">Not a resolution. Just: which one is real for you?</p>
+    <div class="cards-grid">
+      <div class="card commitment" data-future="plantbased" data-annual="310" onclick="selectQ4(this)">
+        <div class="card-emoji">🥗</div>
+        <div class="card-title">Plant-based lunches twice a week</div>
+        <div class="card-desc">saves ~310 lb/year</div>
+      </div>
+      <div class="card commitment" data-future="transit" data-annual="540" onclick="selectQ4(this)">
+        <div class="card-emoji">🚲</div>
+        <div class="card-title">Bike or transit one day a week</div>
+        <div class="card-desc">saves ~540 lb/year</div>
+      </div>
+      <div class="card commitment" data-future="flight" data-annual="550" onclick="selectQ4(this)">
+        <div class="card-emoji">✈️</div>
+        <div class="card-title">Skip one flight this year</div>
+        <div class="card-desc">saves ~550 lb/year</div>
+      </div>
+      <div class="card commitment" data-future="purchase" data-annual="200" onclick="selectQ4(this)">
+        <div class="card-emoji">♻️</div>
+        <div class="card-title">One intentional purchase audit a month</div>
+        <div class="card-desc">saves ~200 lb/year</div>
+      </div>
+    </div>
+    <button class="next-btn" id="next-q4" onclick="goToReveal()">SEE YOUR RESULT →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5: REVEAL ══ -->
+<div class="screen" id="screen-reveal">
+  <div class="reveal-wrap">
+    <div class="reveal-eyebrow">ECO PULSE · DAY 1</div>
+    <h2 class="reveal-h" id="reveal-h">You started carrying something.</h2>
+    <p class="reveal-sub" id="reveal-sub">Here's what the last 60 seconds showed us.</p>
+
+    <!-- 3 stat cards — Wrapped style -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-card-lbl">THE PAST</div>
+        <div class="stat-card-val count-anim" id="stat-past">—</div>
+        <div class="stat-card-unit">LB CO₂E</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-lbl">TODAY</div>
+        <div class="stat-card-val count-anim" id="stat-present">—</div>
+        <div class="stat-card-unit">LB CO₂E</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-lbl">YOUR SHIFT</div>
+        <div class="stat-card-val count-anim" id="stat-future">—</div>
+        <div class="stat-card-unit">LB / YEAR</div>
+      </div>
+    </div>
+
+    <!-- Big annual number -->
+    <div class="annual-block">
+      <div class="annual-pre">OVER THE NEXT 12 MONTHS</div>
+      <div class="annual-num count-anim" id="annual-num">—</div>
+      <div class="annual-unit">LB CO₂e<br>NOT WRITTEN INTO THE AIR</div>
+      <div class="annual-compare" id="annual-compare"></div>
+    </div>
+
+    <!-- Manifesto -->
+    <div class="reveal-manifesto">
+      <div class="reveal-man-line">
+        <span class="reveal-man-dash">—</span>
+        <span class="reveal-man-txt" id="reveal-man1">This is what awareness feels like.</span>
+      </div>
+      <div class="reveal-man-line">
+        <span class="reveal-man-dash">—</span>
+        <span class="reveal-man-txt"><em>Eco Pulse makes it a daily practice.</em> Every choice, counted. Every shift, visible.</span>
+      </div>
+    </div>
+
+    <!-- App screenshots -->
+    <div class="reveal-screens">
+      <div class="reveal-screen-phone"><img src="../snap.png" alt="Snap"></div>
+      <div class="reveal-screen-phone"><img src="../home.png" alt="Home"></div>
+      <div class="reveal-screen-phone"><img src="../profile.png" alt="Profile"></div>
+    </div>
+    <p class="reveal-screens-cap">THE APP · PRIVATE BETA · INVITE ONLY</p>
+
+    <!-- CTAs -->
+    <div class="reveal-cta-block">
+      <button class="cta-primary" onclick="openWaitlist()">JOIN THE WAITLIST →</button>
+      <button class="cta-share" onclick="shareResult()">SHARE MY RESULT</button>
+    </div>
+
+    <!-- Inline waitlist form -->
+    <div class="reveal-wl" id="revealWl">
+      <div class="reveal-wl-pre">YOUR SPOT ON THE LIST</div>
+      <div id="wlFormWrap">
+        <div class="wl-inp-wrap">
+          <label class="wl-inp-lbl" for="wlEmail">EMAIL ADDRESS</label>
+          <input class="wl-inp" id="wlEmail" type="email" placeholder="your@email.com" autocomplete="email">
+        </div>
+        <button class="wl-submit" onclick="submitWaitlist()">SAVE MY SPOT →</button>
+        <div class="wl-err" id="wlErr"></div>
+      </div>
+      <div class="wl-done" id="wlDone">
+        <div class="wl-done-h">You're on the list.</div>
+        <div class="wl-done-p">We'll reach out when your invite is ready. Keep an eye on your inbox.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ SCREEN 6: SUCCESS (post waitlist) ══ -->
+<div class="screen" id="screen-success">
+  <div class="success-screen">
+    <div class="success-plant">🌱</div>
+    <h2 class="success-h">You're in, <em id="success-name">friend</em>.</h2>
+    <p class="success-p">Your invite is coming. When it arrives, this is what you'll wake up to every morning.</p>
+    <div class="success-screens">
+      <div class="success-phone"><img src="../snap.png" alt="Snap"></div>
+      <div class="success-phone"><img src="../home.png" alt="Home"></div>
+      <div class="success-phone"><img src="../profile.png" alt="Profile"></div>
+    </div>
+    <p class="success-note">ECO PULSE · PRIVATE BETA · FRISCO TX</p>
+  </div>
+</div>
+
+<!-- Share toast -->
+<div class="share-toast" id="shareToast">LINK COPIED TO CLIPBOARD</div>
+
+<!-- Footer -->
+<footer class="quiz-footer">
+  <a href="/">← tryecopulse.com</a>
+</footer>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://yzeslhdoviwahtunthor.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kqx9TcHF9Eu36OGkjA85UQ_oqGHTKah';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── STATE ──
+const state = {
+  name:    '',
+  track:   '',  // indifferent | guilty | overwhelmed | hopeful
+  past:    '',
+  present: '',
+  future:  '',
+  annualLbs: 0,
+  city:    'US average',
+  cityAvgDaily: 48,
+};
+
+// ── IMPACT DATA ──
+const IMPACT = {
+  past: {
+    flight:  { lbs: 550 },
+    steak:   { lbs: 15  },
+    amazon:  { lbs: 8   },
+    drive:   { lbs: 70  },
+  },
+  present: {
+    coffee:  { base: 0.8 },
+    lunch:   { base: 9   },
+    commute: { base: 7   },
+    screen:  { base: 0.5 },
+  },
+  futureAnnual: {
+    plantbased: 310,
+    transit:    540,
+    flight:     550,
+    purchase:   200,
+  },
+  cityAvgDaily: {
+    'frisco':   44, 'plano': 44, 'dallas': 46, 'fort worth': 46,
+    'houston':  45, 'austin': 42, 'san antonio': 43,
+    'new york': 31, 'brooklyn': 31, 'manhattan': 31,
+    'los angeles': 34, 'san francisco': 33, 'san jose': 33,
+    'chicago':  39, 'seattle': 28, 'portland': 27,
+    'denver':   38, 'phoenix': 43, 'miami': 41,
+    'boston':   30, 'washington': 33, 'atlanta': 44,
+  },
+};
+
+// ── PER-TRACK COPY ──
+const TRACK_COPY = {
+  indifferent: {
+    q2h: "Let's just look at one number.",
+    q2s: "No pressure. Just pick whichever comes to mind.",
+    q3h: "What about today? Just one ordinary thing.",
+    q3s: "Even if you don't think about it much — the math is still there.",
+    q4h: "If you were going to change one thing — small, doable — pick it.",
+    q4s: "No commitment required. Just: which one is the least effort?",
+    revealH: "You started unsure. Here's the math either way.",
+    revealSub: "The numbers don't need you to care about them to be real.",
+    man1: "The math doesn't require your attention to be true.",
+  },
+  guilty: {
+    q2h: "This isn't about blame. We're just looking honestly.",
+    q2s: "Pick the one that's been sitting with you.",
+    q3h: "Today's choices — most of them — haven't been made yet.",
+    q3s: "There's still room to shift something.",
+    q4h: "Not a promise. Just: which one would you actually do?",
+    q4s: "The smallest shift still writes something different into the air.",
+    revealH: "You started carrying something. You don't have to carry it alone.",
+    revealSub: "Awareness is the first step — not the thing to feel bad about.",
+    man1: "Guilt is just awareness waiting for a direction.",
+  },
+  overwhelmed: {
+    q2h: "Start small. Just one thing from the last month.",
+    q2s: "One thing. Not everything. Just one.",
+    q3h: "Zoom in. Just today. Just one thing.",
+    q3s: "Small is fine. Small is where it starts.",
+    q4h: "One shift. The smallest one that still matters.",
+    q4s: "You don't have to fix everything. You never did.",
+    revealH: "You started overwhelmed. We made it simple.",
+    revealSub: "One number. One shift. That's all this ever needed to be.",
+    man1: "You don't need to carry all of it. Just your share.",
+  },
+  hopeful: {
+    q2h: "You already see your own patterns.",
+    q2s: "Pick the honest one — the one you know about.",
+    q3h: "What could still go either way today?",
+    q3s: "You're already thinking about it. That's more than most.",
+    q4h: "Pick the one you'd actually keep up with.",
+    q4s: "The one that fits your life is the one that compounds.",
+    revealH: "You started hopeful. Good — because this works.",
+    revealSub: "Here's what your path looks like in numbers.",
+    man1: "Hope is a starting point. Numbers are the compass.",
+  },
+};
+
+// ── GEOLOCATION ──
+function detectCity() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+      .then(r => r.json())
+      .then(data => {
+        const city = (data.address?.city || data.address?.town || data.address?.village || '').toLowerCase();
+        for (const [key, val] of Object.entries(IMPACT.cityAvgDaily)) {
+          if (city.includes(key)) {
+            state.city = data.address?.city || data.address?.town || city;
+            state.cityAvgDaily = val;
+            return;
+          }
+        }
+      })
+      .catch(() => {});
+  }, () => {});
+}
+
+// ── PROGRESS ──
+function setProgress(pct) {
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function setStep(label) {
+  document.getElementById('stepLabel').textContent = label;
+}
+
+// ── SCREEN NAVIGATION ──
+function showScreen(id) {
+  document.querySelectorAll('.screen, .app-peek').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── INTRO ──
+const nameInput = document.getElementById('nameInput');
+const startBtn  = document.getElementById('startBtn');
+
+nameInput.addEventListener('input', () => {
+  startBtn.disabled = nameInput.value.trim().length < 1;
+});
+nameInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !startBtn.disabled) startBtn.click();
+});
+
+window.startQuiz = function() {
+  state.name = nameInput.value.trim();
+  detectCity();
+  showScreen('screen-q1');
+  setProgress(10);
+  setStep('Q1 OF 4 · THE MIRROR');
+};
+startBtn.addEventListener('click', window.startQuiz);
+
+// ── Q1 ──
+window.selectQ1 = function(card) {
+  document.querySelectorAll('#screen-q1 .card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.track = card.dataset.track;
+  document.getElementById('next-q1').classList.add('visible');
+};
+
+window.goToQ2 = function() {
+  const copy = TRACK_COPY[state.track];
+  document.getElementById('q2-headline').textContent = copy.q2h;
+  document.getElementById('q2-sub').textContent      = copy.q2s;
+  showScreen('screen-q2');
+  setProgress(30);
+  setStep('Q2 OF 4 · THE PAST');
+};
+
+// ── Q2 ──
+window.selectQ2 = function(card) {
+  if (card.classList.contains('revealed')) return;
+  document.querySelectorAll('#screen-q2 .card').forEach(c => {
+    c.classList.remove('selected', 'revealed');
+  });
+  card.classList.add('selected', 'revealed');
+  state.past = card.dataset.past;
+  // Reveal the impact value on selected card
+  setTimeout(() => {
+    document.getElementById('next-q2').classList.add('visible');
+  }, 400);
+};
+
+window.goToPeek = function() {
+  showScreen('screen-peek');
+  setProgress(50);
+  setStep('ECO PULSE · EVERY DAY');
+};
+
+// ── Q3 ──
+window.goToQ3 = function() {
+  const copy = TRACK_COPY[state.track];
+  document.getElementById('q3-headline').textContent = copy.q3h;
+  document.getElementById('q3-sub').textContent      = copy.q3s;
+  showScreen('screen-q3');
+  setProgress(60);
+  setStep('Q3 OF 4 · THE PRESENT');
+};
+
+window.selectQ3 = function(card) {
+  if (card.classList.contains('revealed')) return;
+  document.querySelectorAll('#screen-q3 .card').forEach(c => {
+    c.classList.remove('selected', 'revealed');
+  });
+  card.classList.add('selected', 'revealed');
+  state.present = card.dataset.present;
+  setTimeout(() => {
+    document.getElementById('next-q3').classList.add('visible');
+  }, 500);
+};
+
+window.goToQ4 = function() {
+  const copy = TRACK_COPY[state.track];
+  document.getElementById('q4-headline').textContent = copy.q4h;
+  document.getElementById('q4-sub').textContent      = copy.q4s;
+  showScreen('screen-q4');
+  setProgress(80);
+  setStep('Q4 OF 4 · THE FUTURE');
+};
+
+// ── Q4 ──
+window.selectQ4 = function(card) {
+  document.querySelectorAll('#screen-q4 .card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  state.future    = card.dataset.future;
+  state.annualLbs = parseInt(card.dataset.annual, 10);
+
+  // Sparkle
+  const sparkle = document.createElement('div');
+  sparkle.className = 'sparkle';
+  sparkle.textContent = '✨';
+  card.appendChild(sparkle);
+  setTimeout(() => sparkle.remove(), 900);
+
+  document.getElementById('next-q4').classList.add('visible');
+};
+
+// ── REVEAL ──
+window.goToReveal = function() {
+  const copy    = TRACK_COPY[state.track];
+  const pastLbs = IMPACT.past[state.past]?.lbs    ?? 0;
+  const presDep = IMPACT.present[state.present]?.base ?? 0;
+
+  // Reveal headline & sub
+  const nameStr = state.name ? `, ${state.name}` : '';
+  document.getElementById('reveal-h').innerHTML =
+    copy.revealH.replace('You started', `You started${nameStr ? ', <em>' + state.name + '</em>' : ''}`).replace(`You started${nameStr ? ', <em>' + state.name + '</em>' : ''}`, copy.revealH);
+  // Keep it simple — just use the track copy as-is
+  document.getElementById('reveal-h').textContent   = copy.revealH;
+  document.getElementById('reveal-sub').textContent = copy.revealSub;
+  document.getElementById('reveal-man1').innerHTML  = copy.man1;
+
+  // Stat cards
+  document.getElementById('stat-past').textContent    = pastLbs.toLocaleString();
+  document.getElementById('stat-present').textContent = presDep.toFixed(1);
+  document.getElementById('stat-future').textContent  = state.annualLbs.toLocaleString();
+
+  // Annual number
+  document.getElementById('annual-num').textContent = state.annualLbs.toLocaleString();
+
+  // Localized comparison
+  const annualAvg = state.cityAvgDaily * 365;
+  const pct       = Math.round((state.annualLbs / annualAvg) * 100);
+  document.getElementById('annual-compare').innerHTML =
+    `That's <strong>${pct}%</strong> of a full year's average for ${state.city}.`;
+
+  showScreen('screen-reveal');
+  setProgress(100);
+  setStep('YOUR RESULT · DAY 1');
+};
+
+// ── WAITLIST ──
+window.openWaitlist = function() {
+  const wl = document.getElementById('revealWl');
+  wl.classList.add('open');
+  wl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+window.submitWaitlist = async function() {
+  const email = document.getElementById('wlEmail').value.trim();
+  const errEl = document.getElementById('wlErr');
+  errEl.textContent = '';
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email.';
+    return;
+  }
+
+  const btn = document.querySelector('.wl-submit');
+  btn.disabled = true;
+  btn.textContent = 'SAVING…';
+
+  const quizResult = {
+    track:    state.track,
+    past:     state.past,
+    present:  state.present,
+    future:   state.future,
+    annualLbs: state.annualLbs,
+    city:     state.city,
+  };
+
+  const { error } = await sb.from('waitlist').insert({
+    name:        state.name || 'Anonymous',
+    email,
+    source:      'quiz',
+    quiz_result: quizResult,
+  });
+
+  if (error && !error.message?.includes('duplicate')) {
+    errEl.textContent = 'Something went wrong. Please try again.';
+    btn.disabled = false;
+    btn.textContent = 'SAVE MY SPOT →';
+    return;
+  }
+
+  // Success
+  document.getElementById('wlFormWrap').style.display = 'none';
+  document.getElementById('wlDone').classList.add('show');
+  document.getElementById('success-name').textContent = state.name || 'friend';
+
+  // After 2s, go to success screen
+  setTimeout(() => {
+    showScreen('screen-success');
+    setStep('YOU\'RE IN · INVITE COMING');
+  }, 2000);
+};
+
+// ── SHARE ──
+window.shareResult = function() {
+  const annualLbs = state.annualLbs;
+  const pastLbs   = IMPACT.past[state.past]?.lbs ?? 0;
+  const text = `I just tried the Eco Pulse quiz.\n\n${pastLbs} lb CO₂e — just one past choice.\nOne small shift = ${annualLbs} lb saved in a year.\n\n60 seconds of honesty. Worth it.\ntryecopulse.com/quiz`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'My Eco Pulse result', text, url: 'https://tryecopulse.com/quiz' })
+      .catch(() => copyFallback(text));
+  } else {
+    copyFallback(text);
+  }
+};
+
+function copyFallback(text) {
+  navigator.clipboard.writeText(text + '\n\ntryecopulse.com/quiz').then(() => {
+    const toast = document.getElementById('shareToast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2800);
+  });
+}
+
+// ── ADD quiz_result column if first time ──
+// (Run once in Supabase SQL editor:)
+// alter table public.waitlist add column if not exists quiz_result jsonb;
+</script>
+
+</body>
+</html>
