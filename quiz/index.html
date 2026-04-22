@@ -1046,14 +1046,23 @@ html, body {
       </div>
     </div>
 
-    <!-- App peek — moved here from mid-quiz, natural transition before CTA -->
-    <div style="background:rgba(200,244,90,0.03);border:1px solid rgba(200,244,90,0.1);border-radius:10px;padding:22px 20px;margin-bottom:24px;display:flex;gap:16px;align-items:center;">
+    <!-- Fix 1: Explicit bridge copy — closes the logical leap out loud -->
+    <div style="border-top:1px solid rgba(200,244,90,0.1);border-bottom:1px solid rgba(200,244,90,0.1);padding:24px 0;margin-bottom:24px;">
+      <p style="font-family:Georgia,serif;font-size:17px;color:rgba(255,255,255,0.88);line-height:1.75;max-width:540px;">
+        You just felt what it's like to see your choices in numbers — in 60 seconds, with no data, no tracking, no app.
+        <em style="color:var(--lime);">Eco Pulse gives you this every single morning.</em>
+        Automatically. Passively. With the actual data from your actual life.
+      </p>
+    </div>
+
+    <!-- App peek — now with more visual weight -->
+    <div style="background:rgba(200,244,90,0.04);border:1px solid rgba(200,244,90,0.15);border-radius:10px;padding:22px 20px;margin-bottom:16px;display:flex;gap:16px;align-items:center;">
       <div style="flex-shrink:0;background:linear-gradient(165deg,#1a2e1d,#0a1a0c);border:1px solid rgba(200,244,90,0.12);border-radius:14px;padding:5px;width:72px;">
         <img src="../home.png" alt="Eco Pulse" style="width:100%;border-radius:10px;display:block;">
       </div>
       <div>
-        <div style="font-family:'Courier New',monospace;font-size:8px;color:rgba(200,244,90,0.6);letter-spacing:3px;margin-bottom:6px;">THIS IS THE APP</div>
-        <div style="font-family:Georgia,serif;font-size:14px;color:rgba(255,255,255,0.88);line-height:1.5;">This is what Eco Pulse does — every morning. Your real math, live.</div>
+        <div style="font-family:'Courier New',monospace;font-size:8px;color:rgba(200,244,90,0.7);letter-spacing:3px;margin-bottom:6px;">THE REAL THING</div>
+        <div style="font-family:Georgia,serif;font-size:14px;color:rgba(255,255,255,0.9);line-height:1.5;">Your live carbon ledger. Every day. Passive where it can be — conversational when you want it.</div>
       </div>
     </div>
 
@@ -1063,17 +1072,22 @@ html, body {
       <div class="reveal-screen-phone"><img src="../home.png" alt="Home"></div>
       <div class="reveal-screen-phone"><img src="../profile.png" alt="Profile"></div>
     </div>
-    <p class="reveal-screens-cap">THE APP · PRIVATE BETA · INVITE ONLY</p>
 
-    <!-- CTAs -->
-    <div class="reveal-cta-block">
-      <button class="cta-primary" onclick="openWaitlist()">JOIN THE WAITLIST →</button>
-      <button class="cta-share" onclick="shareResult()">SHARE MY RESULT</button>
+    <!-- Fix 5: Exclusivity signal with real weight — not a dimmed caption -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center;">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px rgba(200,244,90,0.7);flex-shrink:0;"></div>
+      <span style="font-family:'Courier New',monospace;font-size:10px;color:rgba(200,244,90,0.75);letter-spacing:2.5px;">PRIVATE BETA · INVITE-ONLY · GROWING SLOWLY</span>
     </div>
 
-    <!-- Inline waitlist form -->
+    <!-- Fix 2: CTA rewritten to echo the experience + Fix 4: Share demoted -->
+    <div class="reveal-cta-block">
+      <button class="cta-primary" onclick="openWaitlist()">GET MY INVITE →</button>
+    </div>
+
+    <!-- Fix 3: Waitlist form with context, timeline, no cold blank form -->
     <div class="reveal-wl" id="revealWl">
-      <div class="reveal-wl-pre">YOUR SPOT ON THE LIST</div>
+      <div class="reveal-wl-pre">RESERVE YOUR SPOT</div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.65;margin-bottom:18px;font-style:italic;">We send invites in small batches — typically within 2–3 weeks. You'll get one email when yours is ready. Nothing else.</p>
       <div id="wlFormWrap">
         <div class="wl-inp-wrap">
           <label class="wl-inp-lbl" for="wlEmail">EMAIL ADDRESS</label>
@@ -1081,11 +1095,19 @@ html, body {
         </div>
         <button class="wl-submit" onclick="submitWaitlist()">SAVE MY SPOT →</button>
         <div class="wl-err" id="wlErr"></div>
+        <!-- Social proof inside the form -->
+        <div style="font-family:'Courier New',monospace;font-size:9px;color:rgba(200,244,90,0.4);margin-top:14px;letter-spacing:1.5px;" id="formSocialProof">● OTHERS ARE ALREADY ON THE LIST</div>
       </div>
       <div class="wl-done" id="wlDone">
         <div class="wl-done-h">You're on the list.</div>
-        <div class="wl-done-p">We'll reach out when your invite is ready. Keep an eye on your inbox.</div>
+        <div class="wl-done-p">Watch your inbox — your invite arrives within a few weeks. In the meantime, share the mirror with someone who should see their numbers.</div>
       </div>
+    </div>
+
+    <!-- Fix 4: Share button demoted — below form, smaller, secondary framing -->
+    <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);">
+      <p style="font-family:'Courier New',monospace;font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;margin-bottom:10px;">KNOW SOMEONE WHO SHOULD SEE THEIR NUMBERS?</p>
+      <button class="cta-share" style="max-width:280px;font-size:9px;padding:10px 24px;" onclick="shareResult()">SHARE THIS MIRROR</button>
     </div>
 
   </div>
@@ -1296,16 +1318,17 @@ const startBtn  = document.getElementById('startBtn');
       .from('waitlist')
       .select('*', { count: 'exact', head: true });
     if (count && count > 0) {
-      // Round down to nearest 50 to feel honest, not fake-precise
       const rounded = Math.max(count, 10);
       const display = rounded >= 1000
         ? `${(rounded / 1000).toFixed(1)}k+`
         : `${rounded}+`;
       const el = document.getElementById('socialProof');
       if (el) el.textContent = `● ${display} PEOPLE HAVE SEEN THEIR MIRROR`;
+      const el2 = document.getElementById('formSocialProof');
+      if (el2) el2.textContent = `● ${display} PEOPLE ALREADY ON THE LIST`;
     }
   } catch(e) {
-    // Silently keep the static fallback
+    // Silently keep static fallback
   }
 })();
 
